@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        submodule: recursive
+        submodules: recursive
     - uses: messense/maturin-action@v1
       with:
         manylinux: auto
@@ -29,7 +29,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        submodule: recursive
+        submodules: recursive
     - uses: messense/maturin-action@v1
       with:
         command: build
@@ -45,7 +45,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        submodule: recursive
+        submodules: recursive
     - uses: messense/maturin-action@v1
       with:
         command: build
