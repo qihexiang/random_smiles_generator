@@ -1,0 +1,3 @@
+[submodule "sws"]
+	path = sws
+	url = git@github.com:qihexiang/sws.git
