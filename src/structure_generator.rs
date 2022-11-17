@@ -30,7 +30,8 @@ impl SmilesStackfulSelector for Workspace {
             } else {
                 false
             }
-        }).unwrap()
+        })
+        .unwrap()
     }
 
     fn remove_selector(&mut self, target: NodeIndex, target_selector: &str) -> Option<&String> {
@@ -86,7 +87,7 @@ pub fn random_generate_structure(
     replacers: Vec<(isize, usize, Vec<&str>, &str, &str, &str)>, // select n replacer, replace n times each replacer, avaliable replacers, replacer incoming token, replacer outgoing token, bond type token
 ) -> Option<String> {
     let mut ws = Workspace::new();
-    let start_point = ws.add_smiles(start).unwrap();
+    let start_point = ws.add_structure(start).unwrap();
     for (amount, times, r_sources, incoming_token, outgoing_token, bond_token) in replacers {
         let bond_type = BondType::new(bond_token).unwrap();
         if r_sources.len() == 0 {
@@ -109,7 +110,7 @@ pub fn random_generate_structure(
         if amount >= 0 {
             for _ in 0..amount {
                 let replacer_fragment = random_take_one(&r_sources);
-                let replacer_root = ws.add_smiles(replacer_fragment).unwrap();
+                let replacer_root = ws.add_structure(replacer_fragment).unwrap();
                 for _ in 0..times {
                     let outgoing = ws.find_with_selector(start_point, outgoing_token);
                     let incoming = ws.find_with_selector(replacer_root, incoming_token);
@@ -125,7 +126,7 @@ pub fn random_generate_structure(
         } else {
             while let Some(outgoing) = ws.find_with_selector(start_point, outgoing_token) {
                 let replacer_fragment = random_take_one(&r_sources);
-                let replacer_root = ws.add_smiles(replacer_fragment).unwrap();
+                let replacer_root = ws.add_structure(replacer_fragment).unwrap();
                 let incoming = ws
                     .find_with_selector(replacer_root, incoming_token)
                     .unwrap();
@@ -135,12 +136,12 @@ pub fn random_generate_structure(
             }
         }
     }
-    ws.to_smiles(start_point)
+    ws.to_sws(start_point)
 }
 
 #[test]
-fn generate() {
-    let result = random_generate_structure(
+fn with_metal() {
+    let ligands = random_generate_structure(
         "[P{R;R;Out;L}]",
         vec![
             (
@@ -149,7 +150,6 @@ fn generate() {
                 vec![
                     "[c{In}]1cccc[c{Out}]1",
                     "[c{In}]1ccc[c{Out}]c1",
-                    "[c{In}]1cc[c{Out}]cc1",
                     "[C{R;In;Out}]",
                 ],
                 "In",
@@ -164,7 +164,6 @@ fn generate() {
                     "[H{RIn}]",
                     "[C{RIn}]",
                     "[OH{RIn}]",
-                    "[NH2{RIn}]",
                     "[c{RIn}]1ccccc1",
                 ],
                 "RIn",
@@ -173,5 +172,9 @@ fn generate() {
             ),
         ],
     );
-    println!("{}", result.unwrap());
+
+    let complex = random_generate_structure("[Fe+2{LIn;LIn;LIn;LIn}]", vec![
+        (2,2,vec![&ligands.unwrap()], "L", "LIn", "-")
+    ]).unwrap();
+    println!("{}", complex)
 }

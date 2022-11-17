@@ -15,7 +15,7 @@ fn rgs(
 #[pyfunction]
 fn ligand_index(sws: &str) -> PyResult<Vec<usize>> {
     let mut ws = Workspace::new();
-    let root = ws.add_smiles(sws).unwrap();
+    let root = ws.add_structure(sws).unwrap();
     let nodes = ws.filter_with_selector(root, "L");
     Ok(nodes.iter()
         .map(|ni| ni.index())
